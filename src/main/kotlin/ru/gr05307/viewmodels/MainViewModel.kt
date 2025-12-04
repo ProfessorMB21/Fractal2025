@@ -26,6 +26,7 @@ import ru.gr05307.math.Complex
 import ru.gr05307.painting.*
 import ru.gr05307.rollback.UndoManager
 
+
 class MainViewModel {
     var fractalImage: ImageBitmap = ImageBitmap(0, 0)
     var selectionOffset by mutableStateOf(Offset(0f, 0f))
@@ -75,7 +76,7 @@ class MainViewModel {
         }
     }
 
-    /** Рисование фрактала */
+    // Рисование фрактала
     fun paint(scope: DrawScope) = runBlocking {
         updatePlainSize(scope.size.width, scope.size.height)
 
@@ -92,23 +93,23 @@ class MainViewModel {
         mustRepaint = false
     }
 
-    /** Обновление ImageBitmap после рисования */
+    // Обновление ImageBitmap после рисования
     fun onImageUpdate(image: ImageBitmap) {
         fractalImage = image
     }
 
-    /** Начало выделения области */
+    // Начало выделения области
     fun onStartSelecting(offset: Offset) {
         selectionOffset = offset
         selectionSize = Size(0f, 0f)
     }
 
-    /** Обновление выделяемой области */
+    // Обновление выделяемой области
     fun onSelecting(offset: Offset) {
         selectionSize = Size(selectionSize.width + offset.x, selectionSize.height + offset.y)
     }
 
-    /** Завершение выделения и масштабирование */
+    // Завершение выделения и масштабирование
     fun onStopSelecting() {
         if (selectionSize.width == 0f || selectionSize.height == 0f) return
 
@@ -236,4 +237,3 @@ data class PlainState(
     val yMin: Double,
     val yMax: Double
 )
-

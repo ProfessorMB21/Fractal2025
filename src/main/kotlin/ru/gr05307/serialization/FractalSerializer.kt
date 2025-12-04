@@ -21,6 +21,7 @@ class FractalSerializer {
         filePath: String
     ) {
         val json = JSONObject()
+
         json.put("xMin", plain.xMin)
         json.put("xMax", plain.xMax)
         json.put("yMin", plain.yMin)
