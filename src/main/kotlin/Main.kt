@@ -1,6 +1,5 @@
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
@@ -15,6 +14,8 @@ import androidx.compose.ui.window.application
 import ru.gr05307.ui.PaintPanel
 import ru.gr05307.ui.SelectionPanel
 import ru.gr05307.viewmodels.MainViewModel
+// Добавление от Артёма
+import ru.gr05307.julia.JuliaWindow
 import ru.gr05307.painting.rainbow
 import ru.gr05307.painting.grayscale
 
@@ -22,7 +23,6 @@ import ru.gr05307.painting.grayscale
 @Composable
 @Preview
 fun App(viewModel: MainViewModel = MainViewModel()) {
-
     MaterialTheme {
         Column() {
             Button(onClick = { viewModel.switchToRainbow() }) { Text("Rainbow") }
@@ -73,3 +73,6 @@ fun main(): Unit = application {
         App()
     }
 }
+
+// Test
+

@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.*
 import kotlinx.coroutines.launch
 
-
 @Composable
 fun PaintPanel(
     modifier: Modifier = Modifier,
@@ -37,7 +36,6 @@ fun PaintPanel(
         onPaint(this)
     }
 }
-
 
 @Composable
 fun SelectionPanel(

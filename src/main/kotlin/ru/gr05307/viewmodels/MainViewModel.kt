@@ -26,6 +26,8 @@ import ru.gr05307.painting.FractalFunction
 import ru.gr05307.painting.ColorFunction
 import ru.gr05307.painting.*
 import ru.gr05307.rollback.UndoManager
+// Добавление от Артёма
+import ru.gr05307.julia.openJuliaWindow
 
 class MainViewModel {
     var fractalImage: ImageBitmap = ImageBitmap(0, 0)
@@ -144,6 +146,13 @@ class MainViewModel {
             selectionSize = Size(0f, 0f)
             mustRepaint = true
         }
+    }
+
+    // Изменения от Артёма
+    fun onPointClicked(x: Float, y: Float) {
+        val re = Converter.xScr2Crt(x, plain)
+        val im = Converter.yScr2Crt(y, plain)
+        openJuliaWindow(Complex(re, im))
     }
 
     fun onPanning(offset: Offset){
