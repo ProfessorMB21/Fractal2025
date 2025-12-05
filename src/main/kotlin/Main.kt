@@ -14,6 +14,8 @@ import androidx.compose.ui.window.application
 import ru.gr05307.ui.PaintPanel
 import ru.gr05307.ui.SelectionPanel
 import ru.gr05307.viewmodels.MainViewModel
+// Добавление от Артёма
+import ru.gr05307.julia.JuliaWindow
 
 @Composable
 @Preview
@@ -22,12 +24,15 @@ fun App(viewModel: MainViewModel = MainViewModel()) {
         Box {
             PaintPanel(
                 Modifier.fillMaxSize(),
-                onImageUpdate = {
-                    viewModel.onImageUpdate(it)
+                // Вторая поправка: отредактированный код от Артёма
+                onImageUpdate = { image -> viewModel.onImageUpdate(image) },
+                onPaint = { scope -> viewModel.paint(scope) },
+                onClick = {
+                    pos ->
+                    println("CLICK AT $pos")
+                    viewModel.onPointClicked(pos.x, pos.y)
                 }
-            ) {
-                viewModel.paint(it)
-            }
+            )
             SelectionPanel(
                 viewModel.selectionOffset,
                 viewModel.selectionSize,
