@@ -36,7 +36,13 @@ class MainViewModel {
     private val undoManager = UndoManager(maxSize = 100)
 
     private var currentFractalFunc: FractalFunction = mandelbrotFunc
-    private var currentColorFunc: ColorFunction = rainbow
+    var currentFractalType: String = "mandelbrot"
+        private set
+    var currentColorFunc: ColorFunction = rainbow
+        private set
+    var currentColorType: String = "rainbow"
+        private set
+
 
     private val fractalPainter = FractalPainter(plain, currentFractalFunc, currentColorFunc)
 
@@ -188,25 +194,40 @@ class MainViewModel {
     }
 
     // --- методы переключения функций и цвета ---
-    fun setFractalFunction(f: FractalFunction) {
+    fun setFractalFunction(f: FractalFunction, type: String) {
+        currentFractalFunc = f
+        currentFractalType = type
         fractalPainter.fractalFunc = f
         mustRepaint = true
     }
 
-    fun setColorFunction(c: ColorFunction) {
+    fun setColorFunction(c: ColorFunction, name: String) {
+        currentColorType = name
+        fractalPainter.colorFunc = c
         fractalPainter.colorFunc = c
         mustRepaint = true
     }
 
-    fun switchToRainbow() = setColorFunction(rainbow)
-    fun switchToGrayscale() = setColorFunction(grayscale)
+    fun switchToRainbow() = setColorFunction(rainbow,"rainbow")
+    fun switchToGrayscale() = setColorFunction(grayscale, "grayscale")
     //fun switchToFire() = setColorFunction(fireGradient)
-    fun switchToIce() = setColorFunction(iceGradient)
-    fun switchToNewtonColor() = setColorFunction(newtonColor)
-    fun switchToMandelbrot() = setFractalFunction(mandelbrotFunc)
-    fun switchToJulia() = setFractalFunction(juliaFunc)
-    fun switchToNewton() = setFractalFunction(newtonFunc)
-
+    fun switchToIce() = setColorFunction(iceGradient, "ice")
+    fun switchToNewtonColor() = setColorFunction(newtonColor, "newtonColor")
+    fun switchToMandelbrot() = setFractalFunction(mandelbrotFunc, "mandelbrot")
+    fun switchToJulia() = setFractalFunction(juliaFunc, "julia")
+    fun switchToNewton() = setFractalFunction(newtonFunc, "newton")
+    val currentPlain: Plain
+        get() = plain.copy()
+    fun setPlain(newPlain: Plain) {
+        undoManager.save(plain.copy())   // сохранить в историю
+        plain.xMin = newPlain.xMin
+        plain.xMax = newPlain.xMax
+        plain.yMin = newPlain.yMin
+        plain.yMax = newPlain.yMax
+        plain.width = newPlain.width
+        plain.height = newPlain.height
+        mustRepaint = true
+    }
 }
 
 data class PlainState(
