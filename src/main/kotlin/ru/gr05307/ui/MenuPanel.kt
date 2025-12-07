@@ -22,13 +22,17 @@ import ru.gr05307.painting.*
 @Composable
 fun FractalMenu(
     viewModel: MainViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isShowingTourControls: Boolean = false,
 ) {
     var menuOpen by remember { mutableStateOf(false) }
 
     Box(modifier = modifier) {
         // Кнопка меню
-        Button(onClick = { menuOpen = !menuOpen }) {
+        Button(
+            onClick = { menuOpen = !menuOpen },
+            enabled = !isShowingTourControls
+            ) {
             Text(if (menuOpen) "Закрыть меню" else "Меню")
         }
 
