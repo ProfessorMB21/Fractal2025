@@ -28,6 +28,10 @@ import ru.gr05307.rollback.UndoManager
 
 
 class MainViewModel {
+    var showJulia by mutableStateOf(true)
+    fun setJuliaEnabled(value: Boolean) {
+        showJulia = value
+    }
     var fractalImage: ImageBitmap = ImageBitmap(0, 0)
     var selectionOffset by mutableStateOf(Offset(0f, 0f))
     var selectionSize by mutableStateOf(Size(0f, 0f))
@@ -43,6 +47,13 @@ class MainViewModel {
         private set
     var currentColorType: String = "rainbow"
         private set
+
+    val currentFractalFuncPublic: FractalFunction
+        get() = currentFractalFunc
+
+    val currentColorFuncPublic: ColorFunction
+        get() = currentColorFunc
+
 
 
     private val fractalPainter = FractalPainter(plain, currentFractalFunc, currentColorFunc)
@@ -242,3 +253,5 @@ data class PlainState(
     val yMin: Double,
     val yMax: Double
 )
+
+
