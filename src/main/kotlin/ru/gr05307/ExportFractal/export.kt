@@ -2,7 +2,8 @@ package ru.gr05307.ExportFractal
 
 import ru.gr05307.painting.convertation.Plain
 import ru.gr05307.math.Complex
-import ru.gr05307.fractal.Mandelbrot
+import ru.gr05307.fractals.mandelbrot
+import ru.gr05307.fractals.mandelbrotParallel
 import ru.gr05307.painting.convertation.Converter
 import androidx.compose.ui.graphics.Color
 import java.awt.Color as AwtColor
@@ -20,8 +21,6 @@ class FractalExporter(
     private val fractalFunc: FractalFunction,
     private val colorFunc: ColorFunction
 ) {
-    private val mandelbrot = Mandelbrot(nMax = 200)
-
     fun saveJPG(path: String) {
         val image = process()
         infoComplex(image)
@@ -35,30 +34,51 @@ class FractalExporter(
 
         val nMax = 200
 
-        for (x in 0 until w) {
-            for (y in 0 until h) {
-                val cplx = Complex(
-                    Converter.xScr2Crt(x.toFloat(), plain),
-                    Converter.yScr2Crt(y.toFloat(), plain)
+        // В зависимости от типа фрактала используем разный алгоритм
+        when (fractalFunc) {
+            ru.gr05307.painting.mandelbrotFunc -> {
+                // Используем оптимизированный алгоритм для Мандельброта
+                val iterations = mandelbrotParallel(
+                    width = w,
+                    height = h,
+                    maxIter = nMax,
+                    xMin = plain.xMin,
+                    xMax = plain.xMax,
+                    yMin = plain.yMin,
+                    yMax = plain.yMax
                 )
 
-                val prob = fractalFunc(cplx, nMax)
-
-                val color = colorFunc(prob)
-
-                img.setRGB(x, y, toRGB(color).rgb)
+                for (y in 0 until h) {
+                    for (x in 0 until w) {
+                        val prob = if (iterations[y][x] == nMax) 1f
+                        else iterations[y][x].toFloat() / nMax
+                        val color = colorFunc(prob)
+                        img.setRGB(x, y, toRGB(color).rgb)
+                    }
+                }
+            }
+            else -> {
+                // Для других фракталов используем старый алгоритм
+                for (x in 0 until w) {
+                    for (y in 0 until h) {
+                        val cplx = Complex(
+                            Converter.xScr2Crt(x.toFloat(), plain),
+                            Converter.yScr2Crt(y.toFloat(), plain)
+                        )
+                        val prob = fractalFunc(cplx, nMax)
+                        val color = colorFunc(prob)
+                        img.setRGB(x, y, toRGB(color).rgb)
+                    }
+                }
             }
         }
 
         return img
     }
 
-
     private fun infoComplex(image: BufferedImage) {
         val g = image.createGraphics()
-
         g.color = AwtColor.YELLOW
-
         g.drawString(
             "Re: [${"%.4f".format(plain.xMin)}; ${"%.4f".format(plain.xMax)}]  Im: [${"%.4f".format(plain.yMin)}; ${"%.4f".format(plain.yMax)}]",
             10,

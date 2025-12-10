@@ -10,7 +10,7 @@ class Julia(
     fun iterate(z0: Complex): Float {
         var z = z0
         var i = 0
-        while (i < nMax && z.absoluteValue2 <= r * r) {
+        while (i < nMax && z.abs2 <= r * r) {
             z = z * z + c
             i++
         }

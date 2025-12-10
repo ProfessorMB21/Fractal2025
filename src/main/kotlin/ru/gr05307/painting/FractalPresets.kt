@@ -2,7 +2,8 @@ package ru.gr05307.painting
 
 import androidx.compose.ui.graphics.Color
 import ru.gr05307.math.Complex
-import ru.gr05307.fractal.Mandelbrot
+import ru.gr05307.fractals.mandelbrot
+import ru.gr05307.fractals.mandelbrotParallel
 import ru.gr05307.fractal.Julia
 import ru.gr05307.fractal.NewtonFractal
 import kotlin.math.abs
@@ -10,27 +11,85 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.pow
 
-// Функция для множества Мандельброта
+// Функция для множества Мандельброта (оптимизированная версия)
 val mandelbrotFunc: FractalFunction = { z, nMax ->
-    val m = Mandelbrot(nMax = nMax)
-    m.isInSet(z).coerceIn(0f, 1f)
+    // Встраиваем алгоритм без создания объектов Complex
+    var re = 0.0
+    var imZ = 0.0
+    val cRe = z.re
+    val cIm = z.im
+    var iter = 0
+
+    while (re * re + imZ * imZ <= 4.0 && iter < nMax) {
+        val newRe = re * re - imZ * imZ + cRe
+        imZ = 2 * re * imZ + cIm
+        re = newRe
+        iter++
+    }
+
+    (if (iter == nMax) 1f else iter.toFloat() / nMax).coerceIn(0f, 1f)
 }
 
-// Функция для множества Жюлиа (теперь создаем экземпляр класса Julia)
+// Функция для множества Жюлиа (остаётся без изменений)
 val juliaFunc: FractalFunction = { z, nMax ->
-    // Используем стандартные параметры для Julia
     val j = Julia(nMax = nMax)
     j.iterate(z).coerceIn(0f, 1f)
 }
 
-// Функция для фрактала Ньютона
+// Функция для фрактала Ньютона (остаётся без изменений)
 val newtonFunc: FractalFunction = { z, nMax ->
     val n = NewtonFractal(nMax)
     n.iterate(z).coerceIn(0f, 1f)
 }
 
+// Оптимизированный вариант для быстрого вычисления всего изображения Мандельброта
+fun createMandelbrotImage(
+    width: Int,
+    height: Int,
+    maxIter: Int,
+    xMin: Double,
+    xMax: Double,
+    yMin: Double,
+    yMax: Double,
+    colorFunc: ColorFunction
+): Array<ColorArray> {
 
-// --- Цветовые схемы ---
+    // Используем новую оптимизированную функцию
+    val iterations = mandelbrotParallel(
+        width = width,
+        height = height,
+        maxIter = maxIter,
+        xMin = xMin,
+        xMax = xMax,
+        yMin = yMin,
+        yMax = yMax
+    )
+
+    // Конвертируем итерации в цвета
+    val colors = Array(height) { ColorArray(width) }
+
+    for (y in 0 until height) {
+        for (x in 0 until width) {
+            val iter = iterations[y][x]
+            val prob = if (iter == maxIter) 1f else iter.toFloat() / maxIter
+            colors[y][x] = colorFunc(prob)
+        }
+    }
+
+    return colors
+}
+
+// Вспомогательный класс для массива цветов
+class ColorArray(val size: Int) {
+    private val array = Array<Color?>(size) { null }
+
+    operator fun get(index: Int): Color = array[index]!!
+    operator fun set(index: Int, value: Color) {
+        array[index] = value
+    }
+}
+
+// --- Цветовые схемы остаются без изменений ---
 val grayscale: ColorFunction = { p ->
     val v = p.coerceIn(0f, 1f)
     Color(v, v, v)
@@ -44,14 +103,6 @@ val rainbow: ColorFunction = { p ->
         blue = abs(sin(4 * pp) * cos(4 * (1 - pp)))
     )
 }
-/*val fireGradient: ColorFunction = { p ->
-    val pp = p.coerceIn(0f, 1f)
-    Color(
-        red = pp,
-        green = (pp * 0.5f).coerceIn(0f, 1f),
-        blue = 0f
-    )
-}*/
 
 val iceGradient: ColorFunction = { p ->
     val pp = p.coerceIn(0f, 1f)
@@ -61,6 +112,7 @@ val iceGradient: ColorFunction = { p ->
         blue = 1f
     )
 }
+
 val newtonColor: ColorFunction = { p ->
     val pp = p.coerceIn(0f, 1f)
 
@@ -86,6 +138,26 @@ val newtonColor: ColorFunction = { p ->
     )
 }
 
+// Дополнительная цветовая схема, которая хорошо работает с новой оптимизацией
+val smoothRainbow: ColorFunction = { p ->
+    val pp = p.coerceIn(0f, 1f)
+    val hue = pp * 360f
+    val saturation = 0.8f + 0.2f * sin(pp * 3.14159f * 4f) // Небольшая пульсация насыщенности
+    val brightness = if (pp < 0.99f) 1f else 0f // Черный внутри множества
 
+    // Конвертируем HSV в RGB
+    val c = brightness * saturation
+    val x = c * (1 - abs((hue / 60f) % 2f - 1))
+    val m = brightness - c
 
+    val (r, g, b) = when {
+        hue < 60f -> Triple(c, x, 0f)
+        hue < 120f -> Triple(x, c, 0f)
+        hue < 180f -> Triple(0f, c, x)
+        hue < 240f -> Triple(0f, x, c)
+        hue < 300f -> Triple(x, 0f, c)
+        else -> Triple(c, 0f, x)
+    }
 
+    Color(r + m, g + m, b + m)
+}

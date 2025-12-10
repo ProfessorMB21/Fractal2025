@@ -8,7 +8,7 @@ class NewtonFractal(val nMax: Int = 50, val tol: Double = 1e-6) {
         while (i < nMax) {
             val dz = (z*z*z - Complex(1.0, 0.0)) / (Complex(3.0,0.0)*z*z)
             z = z - dz
-            if (dz.absoluteValue2 < tol) break
+            if (dz.abs2 < tol) break
             i++
         }
         return i.toFloat() / nMax
