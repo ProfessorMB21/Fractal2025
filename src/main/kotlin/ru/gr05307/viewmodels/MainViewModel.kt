@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Canvas
@@ -36,8 +37,11 @@ import ru.gr05307.painting.*
 import ru.gr05307.painting.FractalFunction
 import ru.gr05307.painting.ColorFunction
 import ru.gr05307.math.Complex
+import ru.gr05307.painting.*
 import ru.gr05307.rollback.UndoManager
 import java.util.concurrent.Executors
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.cancelAndJoin
 
 class MainViewModel {
     var showJulia by mutableStateOf(true)
@@ -240,7 +244,6 @@ class MainViewModel {
 
         // Reorder frames by frame number to maintain order
         reorderFramesByNumber()
-        onTourKeyframesChanged()
     }
 
 
@@ -427,6 +430,7 @@ class MainViewModel {
                         mustRepaint = false
                         delay(60)
                     }
+                    delay((1000 / fps).toLong())
                 }
 
             } catch (_: CancellationException) {

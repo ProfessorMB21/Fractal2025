@@ -2,7 +2,7 @@ package ru.gr05307.fractal
 
 import ru.gr05307.math.Complex
 
-class Julia(
+class  Julia(
     val c: Complex = Complex(-0.7, 0.27015), // стандартная «красивая» Julia
     val nMax: Int = 200,
     val r: Double = 2.0
