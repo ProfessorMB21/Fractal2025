@@ -585,7 +585,7 @@ class MainViewModel {
     fun switchToRainbow() = setColorFunction(rainbow,"rainbow")
     fun switchToGrayscale() = setColorFunction(grayscale, "grayscale")
     //fun switchToFire() = setColorFunction(fireGradient)
-    fun switchToIce() = setColorFunction(iceGradient, "ice")
+    //fun switchToIce() = setColorFunction(iceGradient, "ice")
     fun switchToNewtonColor() = setColorFunction(newtonColor, "newtonColor")
     fun switchToMandelbrot() = setFractalFunction(mandelbrotFunc, "mandelbrot")
     fun switchToJulia() = setFractalFunction(juliaFunc, "julia")
