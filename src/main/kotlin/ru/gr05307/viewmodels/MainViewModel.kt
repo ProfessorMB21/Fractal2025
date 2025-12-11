@@ -184,12 +184,23 @@ class MainViewModel {
 
         // Сохраняем пропорции, центрируя выделение
         val selAspect = selWidth / selHeight
+        // После изменения размеров для сохранения пропорций:
         if (selAspect > aspect) {
-            // ширина больше, подгоняем высоту
-            selHeight = (selWidth / aspect).toFloat()  // Приведение к Float
+            // Меняем высоту
+            val oldHeight = selHeight
+            selHeight = (selWidth / aspect).toFloat()
+            // Центрируем по вертикали
+            selectionOffset = selectionOffset.copy(
+                y = selectionOffset.y - (selHeight - oldHeight) / 2
+            )
         } else {
-            // высота больше, подгоняем ширину
-            selWidth = (selHeight * aspect).toFloat()  // Приведение к Float
+            // Меняем ширину
+            val oldWidth = selWidth
+            selWidth = (selHeight * aspect).toFloat()
+            // Центрируем по горизонтали
+            selectionOffset = selectionOffset.copy(
+                x = selectionOffset.x - (selWidth - oldWidth) / 2
+            )
         }
 
         // Рассчитываем новые границы фрактала
@@ -545,6 +556,9 @@ class MainViewModel {
 
     }
 
+
+
+
     // --- методы переключения функций и цвета ---
     fun setFractalFunction(f: FractalFunction, type: String) {
         currentFractalFunc = f
@@ -559,9 +573,6 @@ class MainViewModel {
             MusicForSleep.pauseTheme()
         }
     }
-
-
-
 
     fun setColorFunction(c: ColorFunction, name: String) {
         currentColorType = name
