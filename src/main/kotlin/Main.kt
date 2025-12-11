@@ -178,18 +178,20 @@ fun MainFractalView(
         }
 
         // Floating action button для показа/скрытия тур-контролей
-        FloatingActionButton(
-            onClick = { viewModel.toggleTourControls() },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp),
-            backgroundColor = NeutralDark // Используем цвет гамбургера
-        ) {
-            Icon(
-                if (viewModel.showTourControls) Icons.Default.Close else Icons.Default.PlayArrow,
-                contentDescription = "Tour controls",
-                tint = Color.White // Белая иконка
-            )
+        if (!viewModel.isTourPlaying) {
+            FloatingActionButton(
+                onClick = { viewModel.toggleTourControls() },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp),
+                backgroundColor = NeutralDark // Используем цвет гамбургера
+            ) {
+                Icon(
+                    if (viewModel.showTourControls) Icons.Default.Close else Icons.Default.PlayArrow,
+                    contentDescription = "Tour controls",
+                    tint = Color.White // Белая иконка
+                )
+            }
         }
     }
 }
